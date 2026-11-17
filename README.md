@@ -13,6 +13,13 @@ Command palette:
 
 - **hermes: new thread**: new agent-panel thread with Hermes
 - **hermes: status**: ACP check (`hermes acp --check`), version and Hermes' default model
+- **hermes: sync threads**: show Hermes sessions in the sidebar now
+
+Hermes sessions from every surface (CLI, gateway, other editors) are listed over ACP
+(`session/list`) and shown as threads in the sidebar, 5 seconds after startup and then
+every 2 minutes, through ycode's `agent::SyncAgentThreads` action. Sessions whose working
+directory isn't a folder on this machine appear under the current workspace. Opening one
+loads it from Hermes (`session/load`).
 
 At startup the plugin resolves `hermes` on PATH and runs the ACP check in the background.
 

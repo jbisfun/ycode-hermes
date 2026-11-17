@@ -7,8 +7,14 @@
 -- Command palette:
 --   "hermes: new thread"  new agent-panel thread with Hermes
 --   "hermes: status"      ACP check, version and Hermes' default model
+--   "hermes: sync threads" show Hermes sessions in the sidebar now
+--
+-- Hermes sessions (from any surface: CLI, gateway, other editors) are listed over ACP
+-- and kept in the threads sidebar: shortly after startup, then every SYNC_SECONDS.
+-- Opening one loads it from Hermes (ACP session/load).
 
 local AGENT = "hermes"
+local SYNC_SECONDS = 120
 
 local status = { text = "checking…", ok = nil, model = nil, version = nil }
 
@@ -47,6 +53,21 @@ local function check()
     end)
 end
 
+local last_sync = nil
+
+local function sync()
+    ycode.dispatch("agent::SyncAgentThreads", { agent = AGENT })
+    last_sync = os.date("%H:%M:%S")
+end
+
+-- A timer via ycode.spawn; it stops by itself when hooks are reloaded.
+local function every(seconds, f)
+    ycode.spawn("sleep " .. seconds, function()
+        f()
+        every(seconds, f)
+    end)
+end
+
 local function render(w)
     local m = status.model or {}
     return { "col", w = "full", h = "full", p = 14, gap = 10,
@@ -56,6 +77,8 @@ local function render(w)
         { "text", "version " .. tostring(status.version or "?"), fg = "muted" },
         { "text", "model " .. tostring(m.provider or "?") .. " / " .. tostring(m.default or "?"),
           fg = "muted" },
+        { "text", "sidebar sync " .. (last_sync and ("last at " .. last_sync) or "pending")
+            .. ", every " .. SYNC_SECONDS .. "s", fg = "muted" },
         { "text", "Chats in the agent panel with the \"hermes\" agent are Hermes sessions;"
             .. " change the model with `hermes model`.", fg = "muted", size = 12 },
         { "row", gap = 8,
@@ -63,6 +86,7 @@ local function render(w)
                 ycode.dispatch("agent::NewExternalAgentThread", { agent = AGENT })
                 w.close()
             end },
+            { "button", "Sync threads", on_click = function() sync() end },
             { "button", "Re-check", on_click = function() check() end },
         },
     }
@@ -72,11 +96,20 @@ end
     -- Register right away with a PATH lookup; replaced by the resolved path after check.
     register("hermes")
     check()
+    -- First sync once the workspace and agent panel exist, then periodically.
+    ycode.spawn("sleep 5", function()
+        sync()
+        every(SYNC_SECONDS, sync)
+    end)
 end
 
 %hook hermes
 %new - NewThread
     ycode.dispatch("agent::NewExternalAgentThread", { agent = AGENT })
+end
+
+%new - SyncThreads
+    sync()
 end
 
 %new - Status
