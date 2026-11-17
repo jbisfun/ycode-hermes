@@ -1,23 +1,20 @@
 # ycode-hermes
 
-ycode Lua plugin that makes the model providers configured in
-[Hermes Agent](https://github.com/NousResearch/hermes-agent) available in ycode.
+ycode Lua plugin that makes [Hermes Agent](https://github.com/NousResearch/hermes-agent)
+ycode's agent, over ACP (Agent Client Protocol).
 
-- Each custom OpenAI-compatible provider in hermes `providers:` (e.g. a local Ollama)
-  becomes a ycode language-model provider `hermes-<name>`, with the hermes default model
-  plus every model the endpoint lists at `/models`.
-- A running `hermes proxy` (Nous Portal / xAI OAuth) becomes `hermes-proxy`.
-- "hermes: providers" in the command palette shows Hermes' default model, providers,
-  credential pools and proxy status, and has a Refresh button.
+It registers `hermes acp` as an external agent (`agent_servers.hermes`) through ycode's
+in-memory plugin settings layer. Threads you start with the "hermes" agent in the agent
+panel run inside Hermes, so they are Hermes sessions (saved in Hermes' `state.db`), with
+Hermes' memory, skills, tools and model providers, including OAuth ones. ycode holds no
+credentials; change the model with `hermes model`.
 
-It reads Hermes through the `hermes` CLI (`hermes config get ... --json`, `hermes auth
-list`, `hermes proxy status`) in the background at startup. It never reads keys: ycode asks
-for one per provider, or reads `HERMES_<NAME>_API_KEY` (local Ollama accepts any value).
-OAuth/subscription providers (e.g. Anthropic via Hermes) stay inside Hermes; expose one
-with `hermes proxy start`.
+Command palette:
 
-Settings are applied through ycode's in-memory plugin settings layer, nothing is written
-to settings.json.
+- **hermes: new thread**: new agent-panel thread with Hermes
+- **hermes: status**: ACP check (`hermes acp --check`), version and Hermes' default model
+
+At startup the plugin resolves `hermes` on PATH and runs the ACP check in the background.
 
 ## Install
 
