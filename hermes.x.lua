@@ -9,8 +9,9 @@
 --   "hermes: status"      ACP check, version and Hermes' default model
 --   "hermes: sync threads" show Hermes sessions in the sidebar now
 --
--- Hermes sessions (from any surface: CLI, gateway, other editors) are listed over ACP
--- and kept in the threads sidebar: shortly after startup, then every SYNC_SECONDS.
+-- Hermes sessions (from any surface: CLI, gateway, other editors) started in the open
+-- folders or their subdirectories are listed over ACP and kept in the threads sidebar:
+-- shortly after startup, then every SYNC_SECONDS.
 -- Opening one loads it from Hermes (ACP session/load).
 
 local AGENT = "hermes"
@@ -57,8 +58,12 @@ end
 
 local last_sync = nil
 
+-- Only sessions started in an open folder or below it; Hermes threads from elsewhere are
+-- taken out of the sidebar (they stay in Hermes and come back when that folder is open).
 local function sync()
-    ycode.dispatch("agent::SyncAgentThreads", { agent = AGENT })
+    local folders = ycode.workspace_folders()
+    if #folders == 0 then return end
+    ycode.dispatch("agent::SyncAgentThreads", { agent = AGENT, folders = folders })
     last_sync = os.date("%H:%M:%S")
 end
 

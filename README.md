@@ -29,8 +29,10 @@ Install it once:
 
 Hermes sessions from every surface (CLI, gateway, other editors) are listed over ACP
 (`session/list`) and shown as threads in the sidebar, 5 seconds after startup and then
-every 2 minutes, through ycode's `agent::SyncAgentThreads` action. Sessions whose working
-directory isn't a folder on this machine appear under the current workspace. Opening one
+every 2 minutes, through ycode's `agent::SyncAgentThreads` action. Only sessions whose
+working directory is an open folder or below it are shown; Hermes threads from other
+directories are taken out of the sidebar (they stay in Hermes and return when their folder
+is open). Opening one
 loads it from Hermes (`session/load`).
 
 At startup the plugin resolves `hermes` on PATH and runs the ACP check in the background.
