@@ -22,7 +22,8 @@ and `session/load` include CLI, TUI/desktop and gateway sessions (stock `hermes 
 shows sessions an editor created). Subagent, cron and one-shot sessions stay hidden.
 Install it once:
 
-    ln -s ~/jbisfun/ycode-hermes/hermes-plugin ~/.hermes/plugins/ycode-hermes
+    # from the ycode-hermes clone
+    ln -s "$PWD/hermes-plugin" ~/.hermes/plugins/ycode-hermes
     hermes plugins enable ycode-hermes
 
 ## Sidebar
@@ -39,6 +40,7 @@ At startup the plugin resolves `hermes` on PATH and runs the ACP check in the ba
 
 ## Install
 
-    ln -s ~/jbisfun/ycode-hermes ~/.config/zed/hooks/ycode-hermes
+    # from the ycode-hermes clone
+    ln -s "$PWD" ~/.config/zed/hooks/ycode-hermes
 
 then "ycode: reload hooks".
