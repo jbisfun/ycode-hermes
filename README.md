@@ -15,6 +15,18 @@ Command palette:
 - **hermes: status**: ACP check (`hermes acp --check`), version and Hermes' default model
 - **hermes: sync threads**: show Hermes sessions in the sidebar now
 
+## Hermes plugin
+
+`hermes-plugin/` adds `hermes ycode-acp`: the stock ACP adapter, except that `session/list`
+and `session/load` include CLI, TUI/desktop and gateway sessions (stock `hermes acp` only
+shows sessions an editor created). Subagent, cron and one-shot sessions stay hidden.
+Install it once:
+
+    ln -s ~/jbisfun/ycode-hermes/hermes-plugin ~/.hermes/plugins/ycode-hermes
+    hermes plugins enable ycode-hermes
+
+## Sidebar
+
 Hermes sessions from every surface (CLI, gateway, other editors) are listed over ACP
 (`session/list`) and shown as threads in the sidebar, 5 seconds after startup and then
 every 2 minutes, through ycode's `agent::SyncAgentThreads` action. Sessions whose working

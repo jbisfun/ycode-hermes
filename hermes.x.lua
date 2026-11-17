@@ -21,7 +21,9 @@ local status = { text = "checking…", ok = nil, model = nil, version = nil }
 local function register(command)
     ycode.settings{
         agent_servers = {
-            [AGENT] = { type = "custom", command = command, args = { "acp" } },
+            -- `hermes ycode-acp` (hermes-plugin/ in this repo) is `hermes acp` listing every
+            -- Hermes session, not only editor-created ones.
+            [AGENT] = { type = "custom", command = command, args = { "ycode-acp" } },
         },
     }
 end

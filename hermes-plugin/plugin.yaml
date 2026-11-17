@@ -1,0 +1,4 @@
+name: ycode-hermes
+version: "0.1.0"
+label: ycode Hermes
+description: "`hermes ycode-acp`: the ACP adapter, listing and loading every Hermes session (CLI, TUI, gateway) for ycode's sidebar"
