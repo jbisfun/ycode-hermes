@@ -77,25 +77,23 @@ end
 
 local function render(w)
     local m = status.model or {}
-    return { "col", w = "full", h = "full", p = 14, gap = 10,
-        { "text", "Hermes over ACP", bold = true, size = 16 },
-        { "text", status.text, mono = true, size = 12,
-          fg = status.ok == true and "success" or status.ok == false and "error" or "muted" },
-        { "text", "version " .. tostring(status.version or "?"), fg = "muted" },
-        { "text", "model " .. tostring(m.provider or "?") .. " / " .. tostring(m.default or "?"),
-          fg = "muted" },
-        { "text", "sidebar sync " .. (last_sync and ("last at " .. last_sync) or "pending")
-            .. ", every " .. SYNC_SECONDS .. "s", fg = "muted" },
-        { "text", "Chats in the agent panel with the \"hermes\" agent are Hermes sessions;"
-            .. " change the model with `hermes model`.", fg = "muted", size = 12 },
-        { "row", gap = 8,
-            { "button", "New Hermes thread", on_click = function(w)
+    local fact = function(k, v) return { "list_item", k, detail = v } end
+    return { "panel", header = { title = "Hermes over ACP", actions = {
+            { "icon_button", icon = "rotate_cw", tooltip = "Re-check", on_click = function() check() end } } },
+        footer = "Chats with the \"hermes\" agent are Hermes sessions; change the model with `hermes model`.",
+        { "section", "Status",
+            { "list_item", status.text, mono = true, size = "small",
+              color = status.ok == true and "success" or status.ok == false and "error" or "muted" },
+            fact("version", tostring(status.version or "?")),
+            fact("model", tostring(m.provider or "?") .. " / " .. tostring(m.default or "?")),
+            fact("sidebar sync", (last_sync and ("last at " .. last_sync) or "pending")
+                .. ", every " .. SYNC_SECONDS .. "s") },
+        { "toolbar",
+            { "button", "New Hermes thread", style = "filled", on_click = function(w)
                 ycode.dispatch("agent::NewExternalAgentThread", { agent = AGENT })
                 w.close()
             end },
-            { "button", "Sync threads", on_click = function() sync() end },
-            { "button", "Re-check", on_click = function() check() end },
-        },
+            { "button", "Sync threads", on_click = function() sync() end } },
     }
 end
 
@@ -125,7 +123,7 @@ end
         render = function(w)
             local ok, tree = pcall(render, w)
             if ok then return tree end
-            return { "text", "ycode-hermes: " .. tostring(tree), fg = "error" }
+            return { "empty", "ycode-hermes: " .. tostring(tree), color = "error" }
         end,
     }
 end
